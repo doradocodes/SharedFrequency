@@ -16,7 +16,8 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.doradocodes.SharedFrequency"
+      "bundleIdentifier": "com.doradocodes.SharedFrequency",
+      "buildNumber": "2"
     },
     "android": {
       "adaptiveIcon": {

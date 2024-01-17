@@ -20,6 +20,15 @@
         "simulator": true
       }
     }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "appleId": "doradocodes@gmail.com",
+        "ascAppId": "6474638950",
+        "appleTeamId": "U3QJFSG5L5"
+      }
+    }
   }
 }
 

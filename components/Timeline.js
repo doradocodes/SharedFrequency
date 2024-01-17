@@ -1,18 +1,19 @@
 import {View, Text, Image, StyleSheet, ScrollView} from "react-native";
-import {layout} from "../constants/constants";
+import {colors, layout} from "../constants/constants";
 import {useEffect, useRef, useState} from "react";
 import Slider from "@react-native-community/slider";
 import AnimatedView from "react-native-reanimated/src/reanimated2/component/View";
 import {interpolate, useAnimatedStyle, useSharedValue} from "react-native-reanimated";
 
-export default function Timeline({ items }) {
+export default function Timeline({ items = [] }) {
     const [timelineLocation, setTimelineLocation] = useState(0);
     const timelineRef = useRef(null);
     const activeIndex = useSharedValue(0);
-    // useEffect(() => {
-    //     timelineRef.current.scrollToEnd({ animated: true});
-    // }, [items]);
 
+    useEffect(() => {
+        setTimelineLocation(items.length - 1);
+        timelineRef.current.scrollTo({ x: (items.length - 1) * 80, animated: true});
+    }, [items]);
 
     const animatedItemStyle = useAnimatedStyle((i) => {
         if (i === timelineLocation) {
@@ -27,10 +28,7 @@ export default function Timeline({ items }) {
         return {};
     });
 
-    return <View style={{
-        // height: 110,
-        // backgroundColor: 'red',
-    }}>
+    return <View>
         <View style={{
             height: 100,
         }}>
@@ -43,13 +41,21 @@ export default function Timeline({ items }) {
             </ScrollView>
         </View>
 
+        <View>
+            <AnimatedView style={[styles.selectedItem]}>
+                <Text>{items[timelineLocation]?.title}</Text>
+            </AnimatedView>
+        </View>
+
         <Slider
             style={{width: layout.width, marginLeft: 'auto', marginRight: 'auto'}}
             value={timelineLocation}
             onValueChange={(value) => {
+                console.log('value', value);
+                setTimelineLocation(value);
                 timelineRef.current.scrollTo({ x: value * 80, animated: true});
             }}
-            // step={1}
+            step={1}
             minimumValue={0}
             maximumValue={items.length - 1}
             minimumTrackTintColor="black"
@@ -77,16 +83,23 @@ const styles = StyleSheet.create({
         shadowColor: 'black',
 
     }),
-    image: (isLastItem) => ({
-        marginTop: isLastItem? 12 : 12.25,
+    image: (isSelectedItem) => ({
         borderRadius: 5,
         width: '100%',
         height: '100%',
-        // transform: [
-        //     {
-        //         scale: isLastItem ? 1.2 : 1,
-        //     }
-        // ],
         transformOrigin: '50% 50%',
-    })
+        transform: [
+            {
+                scale: isSelectedItem ? 1.1 : 1,
+            }
+        ],
+    }),
+    selectedItem: {
+        backgroundColor: '#eee',
+        borderRadius: 5,
+        padding: 10,
+        width: layout.width,
+        marginLeft: 'auto',
+        marginRight: 'auto',
+    }
 });

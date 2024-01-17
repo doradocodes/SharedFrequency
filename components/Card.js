@@ -1,8 +1,10 @@
-import {Image, Pressable, StyleSheet} from 'react-native'
+import {Image, Pressable, StyleSheet, Text} from 'react-native'
 import {colors, layout, maxVisibleItems} from "../constants/constants";
 import {styles} from "../styles/styles";
-import {Extrapolate, interpolate, useAnimatedStyle} from "react-native-reanimated";
+import {Extrapolate, interpolate, useAnimatedStyle, useSharedValue, withTiming} from "react-native-reanimated";
 import AnimatedView from "react-native-reanimated/src/reanimated2/component/View";
+import Song from "./Song";
+import * as Haptics from "expo-haptics";
 
 
 export default function Card({
@@ -10,9 +12,24 @@ export default function Card({
                                  index,
                                  totalLength,
                                  activeIndex,
-                                 setIsAlbumsView,
+                                 songView,
+                                 setTimelineItems,
                              }) {
     const animatedStyle = useAnimatedStyle(() => {
+        if (songView.value > 0) {
+            if (index === Math.round(activeIndex.value)) {
+                return {
+                    transform: [
+                        {
+                            translateY: -layout.height * 0.15 * songView.value,
+                        },
+                    ]
+                }
+            }
+            return {
+                opacity: 0
+            }
+        }
         return {
             position: 'absolute',
             zIndex: totalLength - index,
@@ -29,31 +46,31 @@ export default function Card({
         }
     });
 
-
-    // const draggableStyle = useAnimatedStyle(() => {
-    //     console.log('draggable', dragPosX.value, dragPosY.value);
-    //     if (dragPosX.value > 0 && dragPosY.value > 0) {
-    //         return {
-    //             transform: [
-    //                 {
-    //                     translateX: dragPosX.value,
-    //                 },
-    //                 {
-    //                     translateY: dragPosY.value,
-    //                 }
-    //             ]
-    //         }
-    //     }
-    //     return {};
-    // });
-
+    const songListStyle = useAnimatedStyle(() => {
+        if (index === Math.round(activeIndex.value)) 0{
+            return {
+                opacity: songView.value,
+            }
+        }
+        return {};
+    });
 
     return (
         <AnimatedView style={[cardStyle.album, animatedStyle]}>
             <Pressable
-                onLongPress={() => setIsAlbumsView(false)}
+                onLongPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+                    songView.value = withTiming(1, [100]);
+                }}
                 style={[styles.imageContainer]}>
                 <Image source={{uri: info.image}} style={[styles.locationImage]}/>
+                <AnimatedView style={[cardStyle.songList, songListStyle]}>
+                    {info.song && <Song
+                        title={info.song.title}
+                        image={info.image}
+                        setTimelineItems={setTimelineItems}
+                    />}
+                </AnimatedView>
             </Pressable>
         </AnimatedView>
     )
@@ -65,9 +82,15 @@ const cardStyle = StyleSheet.create({
         borderRadius: layout.borderRadius,
         width: layout.width,
         height: layout.width,
-        // padding: layout.spacing,
         backgroundColor: colors.light,
         overflow: 'hidden',
     },
-
+    songList: {
+        position: 'absolute',
+        opacity: 0,
+        padding: 10,
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'rgba(0,0,0,0.5)'
+    }
 })

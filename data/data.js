@@ -1,9 +1,15 @@
 export const albumCovers = [
     {
         image: 'https://upload.wikimedia.org/wikipedia/en/e/e3/Shore_%28Fleet_Foxes%29.png',
+        song: {
+            title: 'Wading in Waist High Water',
+        }
     },
     {
-        image: 'https://upload.wikimedia.org/wikipedia/en/b/b6/Crack-Up_-_Fleet_Foxes.jpg'
+        image: 'https://upload.wikimedia.org/wikipedia/en/b/b6/Crack-Up_-_Fleet_Foxes.jpg',
+        song: {
+            title: 'Third of May / Ōdaigahara',
+        }
     },
     {
         image: 'https://upload.wikimedia.org/wikipedia/en/0/05/FleetFoxesHelplessness_Blues2011.jpg'
