@@ -47,7 +47,7 @@ export default function Card({
     });
 
     const songListStyle = useAnimatedStyle(() => {
-        if (index === Math.round(activeIndex.value)) 0{
+        if (index === Math.round(activeIndex.value)) {
             return {
                 opacity: songView.value,
             }
