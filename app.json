@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "SharedFrequency",
-    "slug": "SharedFrequency",
+    "slug": "shared-frequency",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -30,8 +30,9 @@
     },
     "extra": {
       "eas": {
-        "projectId": "2e8d5ec2-4e7d-4763-9397-469082d1be9e"
+        "projectId": "233db468-4e67-45aa-bfb1-4c4785408835"
       }
-    }
+    },
+    "owner": "shared-frequency"
   }
 }
