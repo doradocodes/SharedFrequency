@@ -4,11 +4,12 @@ import {colors, layout} from "../constants/constants";
 
 export const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        justifyContent: 'space-between',
-        paddingTop: Constants.statusBarHeight || 60,
-        backgroundColor: colors.primary,
-        // padding: layout.spacing
+        // flex: 1,
+        // justifyContent: 'space-between',
+        // paddingTop: Constants.statusBarHeight || 60,
+        // backgroundColor: colors.primary,
+        // padding: layout.spacing,
+        position: 'relative',
     },
     pressableContainer: {
         height: '100%',
@@ -27,9 +28,7 @@ export const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
     },
-    imageContainer: {
-        flex: 1,
-    },
+
     row: {
         flexDirection: 'row',
         columnGap: layout.spacing / 2,
@@ -37,9 +36,11 @@ export const styles = StyleSheet.create({
     },
     icon: {},
     input: {
-        backgroundColor: 'white',
+        backgroundColor: 'transparent',
         height: 40,
-        borderWidth: 1,
-        padding: 10,
+        borderBottomWidth: 1,
+        margin: 10,
+        fontSize: 30,
+        textAlign: 'center',
     },
 })

@@ -20,4 +20,4 @@ export const layout = {
     cardsGap: 22,
 };
 
-export const maxVisibleItems = 6;
+export const maxVisibleItems = 4;

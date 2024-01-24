@@ -1,29 +1,40 @@
-import {StyleSheet, Text, TextInput, View} from "react-native";
-import Header from "../components/Header";
+import {Button, Image, StyleSheet, Text, TextInput, View} from "react-native";
 import {styles} from "../styles/styles";
-import {useAnimatedStyle, useSharedValue, withTiming} from "react-native-reanimated";
+import {BounceInDown, useAnimatedStyle, useSharedValue, withTiming} from "react-native-reanimated";
 import {Directions, Gesture, GestureDetector, GestureHandlerRootView} from "react-native-gesture-handler";
-import {albumCovers} from "../data/data";
+import {searchResults} from "../data/data";
 import Timeline from "../components/Timeline";
 import {layout} from "../constants/constants";
 import Card from "../components/Card";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import AnimatedView from "react-native-reanimated/src/reanimated2/component/View";
+import {searchItem} from "../api/spotifyAPI";
+import Header from "../components/Header";
 
 export default function Builder() {
-    const albumView = useSharedValue(1);
     const [timelineItems, setTimelineItems] = useState([]);
-    const [searchText, setSearchText] = useState('');
+    const [searchText, setSearchText] = useState('Fleet Foxes');
+    const [modalVisible, setModalVisible] = useState(false);
+    const [searchResults, setSearchResults] = useState([]);
 
     // animation values
+    const albumView = useSharedValue(layout.height );
     let activeIndex = useSharedValue(0);
     let songView = useSharedValue(0);
 
+    useEffect(() => {
+        searchItem().then(res => {
+            console.log('res', res);
+            if (res?.albums) {
+                setSearchResults(res.albums);
+            }
+        })
+    }, []);
 
     const flingUp = Gesture.Fling().direction(Directions.UP).onStart(() => {
         console.log('fling up', activeIndex.value)
-        if (albumView.value > 0 && activeIndex.value > 0) {
-            songView.value = 0;
+        if (songView.value < 1 && activeIndex.value > 0) {
+            // songView.value = 0;
             activeIndex.value = withTiming(activeIndex.value - 1, [300])
         }
     });
@@ -31,71 +42,88 @@ export default function Builder() {
         .direction(Directions.DOWN)
         .onStart(() => {
             console.log('fling down', activeIndex.value)
-            if (albumView.value > 0 && activeIndex.value < albumCovers.length - 1) {
-                songView.value = 0;
-                activeIndex.value = withTiming(activeIndex.value + 1, [300], () => {
-                });
+            if (songView.value < 1 && activeIndex.value < searchResults.items.length - 1) {
+                // songView.value = 0;
+                activeIndex.value = withTiming(activeIndex.value + 1, [300]);
             }
         });
 
     const albumViewStyle = useAnimatedStyle(() => {
         return {
-            opacity: albumView.value,
-            zIndex: albumView.value > 0 ? 1 : -1,
+            // marginTop: albumView.value,
         };
     });
 
-    return <GestureHandlerRootView style={styles.container}>
+    return <GestureHandlerRootView style={[styles.container, {
+    }]}>
+        <View style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: layout.height * 0.5,
+            overflow: 'hidden',
+        }}>
+            <View style={builderStyle.playlistCoverContainer}></View>
+            <Image source={{uri: 'https://upload.wikimedia.org/wikipedia/en/e/e3/Shore_%28Fleet_Foxes%29.png'}}
+                   style={builderStyle.playlistCover}/>
+        </View>
+
         <Header/>
 
-        <View>
-            <View style={{
-                backgroundColor: 'white',
-            }}>
-                <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                    <Text style={{padding: 10, fontSize: 20}}>Playlist: [name]</Text>
-                    <Text style={{padding: 10, fontSize: 20}}>Playlist time: [time]</Text>
-                </View>
 
-                <Timeline items={timelineItems}/>
+
+        <View style={{
+            // backgroundColor: 'blue',
+        }}>
+            <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: layout.height * 0.25 - 30}}>
+                <Text style={{padding: 10, fontSize: 25, color: 'white', fontWeight: 'bold'}}>Playlist name</Text>
             </View>
-            <View>
-                <TextInput
-                    style={styles.input}
-                    onChangeText={setSearchText}
-                    value={searchText}
-                    placeholder="Seach for a song"
-                />
-
-
-                <View style={{
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                }}>
-                    <GestureDetector gesture={Gesture.Exclusive(flingUp, flingDown)}>
-                        <AnimatedView
-                            style={[builderStyle.albumStack, albumViewStyle]}
-                            pointerEvents="box-none"
-                        >
-                            {albumCovers.map((c, index) => {
-                                return (
-                                    <Card
-                                        info={c}
-                                        key={c.id}
-                                        index={index}
-                                        activeIndex={activeIndex}
-                                        songView={songView}
-                                        totalLength={albumCovers.length - 1}
-                                        setTimelineItems={setTimelineItems}
-                                    />
-                                )
-                            })}
-                        </AnimatedView>
-                    </GestureDetector>
-
-                </View>
-            </View>
+            <Timeline items={timelineItems}/>
+            {/*<Button title="Add song" onPress={() => {*/}
+            {/*    // setModalVisible(true)*/}
+            {/*    albumView.value = withTiming(0, [100]);*/}
+            {/*}}>Add song</Button>*/}
         </View>
+
+        <AnimatedView style={[
+            // albumViewStyle
+        ]}>
+            <TextInput
+                style={styles.input}
+                onChangeText={setSearchText}
+                value={searchText}
+                placeholder="Seach for a song"
+            />
+
+            <View style={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+            }}>
+                <GestureDetector gesture={Gesture.Exclusive(flingUp, flingDown)}>
+                    <AnimatedView
+                        style={[builderStyle.albumStack, albumViewStyle]}
+                        pointerEvents="box-none"
+                    >
+                        {searchResults?.items?.map((c, index) => {
+                            return (
+                                <Card
+                                    info={c}
+                                    key={c.id}
+                                    index={index}
+                                    activeIndex={activeIndex}
+                                    songView={songView}
+                                    totalLength={searchResults.items.length - 1}
+                                    setTimelineItems={setTimelineItems}
+                                />
+                            )
+                        })}
+                    </AnimatedView>
+                </GestureDetector>
+
+            </View>
+        </AnimatedView>
+
     </GestureHandlerRootView>
 }
 
@@ -105,9 +133,22 @@ const builderStyle = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-end',
     },
-    backgroundImage: {
+    playlistCoverContainer: {
         position: 'absolute',
-        zIndex: -1,
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        zIndex: 1,
+        backgroundColor: 'rgba(0,0,0,0.5)'
+    },
+    playlistCover: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        // zIndex: -1,
+        height: '100%',
+        width: '100%',
     },
     thumbnailImage: {
         width: 100,

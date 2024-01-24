@@ -1,14 +1,24 @@
 import {PanGestureHandler} from "react-native-gesture-handler";
-import {runOnJS, useAnimatedGestureHandler, useAnimatedStyle, useSharedValue} from "react-native-reanimated";
-import {Image, Pressable, StyleSheet, Text} from "react-native";
+import {BounceIn, runOnJS, useAnimatedGestureHandler, useAnimatedStyle, useSharedValue} from "react-native-reanimated";
+import {Button, Image, Pressable, StyleSheet, Text} from "react-native";
 import AnimatedView from "react-native-reanimated/src/reanimated2/component/View";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import * as Haptics from "expo-haptics";
+import {getTrack} from "../api/spotifyAPI";
 
-export default function Song({ image, title, setTimelineItems }) {
+export default function Song({ track, albumImage, setTimelineItems }) {
+    const [trackData, setTrackData] = useState({});
     const [hideText, setHideText] = useState(false);
     const translateX = useSharedValue(0);
     const translateY = useSharedValue(0);
+
+    // useEffect(() => {
+    //     if (!trackData) {
+    //         getTrack(track.id).then(res => {
+    //             setTrackData(res);
+    //         })
+    //     }
+    // }, [trackData])
 
     const panGesture = useAnimatedGestureHandler({
         onActive: event => {
@@ -18,20 +28,20 @@ export default function Song({ image, title, setTimelineItems }) {
         },
     });
 
-    const animatedStyle = useAnimatedStyle(() => {
-        console.log('draggable', translateX.value, translateY.value);
-        runOnJS(setHideText)(true);
-        return {
-            transform: [
-                {
-                    translateY: translateY.value,
-                },
-                {
-                    translateX: translateX.value,
-                }
-            ]
-        }
-    });
+    // const animatedStyle = useAnimatedStyle(() => {
+    //     console.log('draggable', translateX.value, translateY.value);
+    //     runOnJS(setHideText)(true);
+    //     return {
+    //         transform: [
+    //             {
+    //                 translateY: translateY.value,
+    //             },
+    //             {
+    //                 translateX: translateX.value,
+    //             }
+    //         ]
+    //     }
+    // });
 
     return (
         <AnimatedView style={[styles.song]}>
@@ -44,10 +54,16 @@ export default function Song({ image, title, setTimelineItems }) {
             <Pressable
                 onPress={() => {
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-                    setTimelineItems((prev) => [...prev, {image, title}])
+                    console.log(albumImage);
+                    setTimelineItems((prev) => [...prev, {image: albumImage, title: track.name, id: track.id}]);
                 }}
             >
-                <Text>{title}</Text>
+                <Text style={styles.title}>{track.name}</Text>
+                {/*<Text style={styles.title}>{track.id}</Text>*/}
+                <Text style={styles.title}>{track.artists.map(artist => artist.name)}</Text>
+                {/*<Text style={styles.title}>{track.preview_url}</Text>*/}
+                <Button title={'Play preview'} onPress={() => {
+                }} />
             </Pressable>
 
         </AnimatedView>
@@ -62,12 +78,10 @@ const styles = StyleSheet.create({
         padding: 10,
         backgroundColor: 'white',
         borderRadius: 10,
-        shadowOpacity: 0.3,
-        shadowRadius: 5,
-        shadowOffset: {
-            width: 0,
-            height: 0,
-        },
         shadowColor: 'black',
+        marginBottom: 10,
+    },
+    title: {
+        // color: 'white',
     }
 });

@@ -8,29 +8,33 @@ import {interpolate, useAnimatedStyle, useSharedValue} from "react-native-reanim
 export default function Timeline({ items = [] }) {
     const [timelineLocation, setTimelineLocation] = useState(0);
     const timelineRef = useRef(null);
-    const activeIndex = useSharedValue(0);
+    const listRef = useRef(null);
+    // const activeIndex = useSharedValue(0);
+    // const [activeIndex, setActiveIndex] = useState(0);
 
     useEffect(() => {
         setTimelineLocation(items.length - 1);
         timelineRef.current.scrollTo({ x: (items.length - 1) * 80, animated: true});
+        listRef.current.scrollTo({ y: (items.length - 1) * 15, animated: true});
     }, [items]);
 
-    const animatedItemStyle = useAnimatedStyle((i) => {
-        if (i === timelineLocation) {
-            return {
-                transform: [
-                    {
-                        scale: interpolate(activeIndex.value, [i - 1, i, i + 1], [0.95, 1, 1.1]),
-                    }
-                ],
-            }
-        }
-        return {};
-    });
+    // const animatedItemStyle = useAnimatedStyle((i) => {
+    //     if (i === timelineLocation) {
+    //         return {
+    //             transform: [
+    //                 {
+    //                     scale: interpolate(activeIndex.value, [i - 1, i, i + 1], [0.95, 1, 1.1]),
+    //                 }
+    //             ],
+    //         }
+    //     }
+    //     return {};
+    // });
 
     return <View>
         <View style={{
-            height: 100,
+            // height: 150,
+            // backgroundColor: 'blue',
         }}>
             <ScrollView ref={timelineRef} horizontal={true} style={styles.container} showsHorizontalScrollIndicator={true}>
                 {items.map((item, i) => {
@@ -41,19 +45,16 @@ export default function Timeline({ items = [] }) {
             </ScrollView>
         </View>
 
-        <View>
-            <AnimatedView style={[styles.selectedItem]}>
-                <Text>{items[timelineLocation]?.title}</Text>
-            </AnimatedView>
-        </View>
-
         <Slider
-            style={{width: layout.width, marginLeft: 'auto', marginRight: 'auto'}}
+            style={{
+                width: '100%',
+                marginTop: -35,
+            }}
             value={timelineLocation}
             onValueChange={(value) => {
-                console.log('value', value);
                 setTimelineLocation(value);
                 timelineRef.current.scrollTo({ x: value * 80, animated: true});
+                listRef.current.scrollTo({ y: value * 15, animated: true});
             }}
             step={1}
             minimumValue={0}
@@ -61,13 +62,27 @@ export default function Timeline({ items = [] }) {
             minimumTrackTintColor="black"
             maximumTrackTintColor="#eeeeee"
         />
+
+        <View>
+            <AnimatedView style={[styles.trackList]}>
+                <ScrollView ref={listRef} style={{ height: 50 }}>
+                    {items.map((item, i) => {
+                        return <Text style={{ fontWeight: timelineLocation == i ? 'bold': 'normal'}}>{item.title}</Text>;
+                    })}
+                </ScrollView>
+            </AnimatedView>
+        </View>
+
+
     </View>
 }
 
 const styles = StyleSheet.create({
     container: {
         // flexDirection: 'row',
+        paddingTop: 20,
         paddingLeft: 10,
+        height: 120,
     },
     item: (isFirstItem, isLastItem) => ({
         width: 80,
@@ -84,20 +99,18 @@ const styles = StyleSheet.create({
 
     }),
     image: (isSelectedItem) => ({
-        borderRadius: 5,
+        borderRadius: 10,
         width: '100%',
         height: '100%',
-        transformOrigin: '50% 50%',
+        // transformOrigin: '50% 50%',
+        zIndex: isSelectedItem ? 10 : 0,
         transform: [
             {
-                scale: isSelectedItem ? 1.1 : 1,
+                scale: isSelectedItem ? 1.5 : 1,
             }
         ],
     }),
-    selectedItem: {
-        backgroundColor: '#eee',
-        borderRadius: 5,
-        padding: 10,
+    trackList: {
         width: layout.width,
         marginLeft: 'auto',
         marginRight: 'auto',
