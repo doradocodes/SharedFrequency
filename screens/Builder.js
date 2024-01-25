@@ -1,6 +1,6 @@
 import {Button, Image, StyleSheet, Text, TextInput, View} from "react-native";
 import {styles} from "../styles/styles";
-import {BounceInDown, useAnimatedStyle, useSharedValue, withTiming} from "react-native-reanimated";
+import {BounceInDown, runOnJS, useAnimatedStyle, useSharedValue, withTiming} from "react-native-reanimated";
 import {Directions, Gesture, GestureDetector, GestureHandlerRootView} from "react-native-gesture-handler";
 import {searchResults} from "../data/data";
 import Timeline from "../components/Timeline";
@@ -10,6 +10,7 @@ import {useEffect, useState} from "react";
 import AnimatedView from "react-native-reanimated/src/reanimated2/component/View";
 import {searchItem} from "../api/spotifyAPI";
 import Header from "../components/Header";
+import * as Haptics from "expo-haptics";
 
 export default function Builder() {
     const [timelineItems, setTimelineItems] = useState([]);
@@ -31,11 +32,16 @@ export default function Builder() {
         })
     }, []);
 
+    const vibrate = () => {
+        runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Heavy);
+    };
+
     const flingUp = Gesture.Fling().direction(Directions.UP).onStart(() => {
         console.log('fling up', activeIndex.value)
         if (songView.value < 1 && activeIndex.value > 0) {
             // songView.value = 0;
             activeIndex.value = withTiming(activeIndex.value - 1, [300])
+            runOnJS(vibrate)();
         }
     });
     const flingDown = Gesture.Fling()
@@ -45,6 +51,7 @@ export default function Builder() {
             if (songView.value < 1 && activeIndex.value < searchResults.items.length - 1) {
                 // songView.value = 0;
                 activeIndex.value = withTiming(activeIndex.value + 1, [300]);
+                runOnJS(vibrate)();
             }
         });
 
@@ -71,13 +78,12 @@ export default function Builder() {
 
         <Header/>
 
-
-
         <View style={{
             // backgroundColor: 'blue',
         }}>
-            <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: layout.height * 0.25 - 30}}>
-                <Text style={{padding: 10, fontSize: 25, color: 'white', fontWeight: 'bold'}}>Playlist name</Text>
+            <View style={{ padding: 10 }}>
+                <Text style={{fontSize: 25, color: 'white', fontWeight: 'bold'}}>Playlist name</Text>
+                <Text style={{ color: 'white' }}>@author @author</Text>
             </View>
             <Timeline items={timelineItems}/>
             {/*<Button title="Add song" onPress={() => {*/}
@@ -95,6 +101,13 @@ export default function Builder() {
                 value={searchText}
                 placeholder="Seach for a song"
             />
+
+            <Text style={{
+                opacity: 0.2,
+                fontStyle: 'italic',
+                textAlign: 'center',
+                padding: 5,
+            }}>{songView.value > 0 ? 'Tap to add song to playlist' : 'Press and hold to view songs'}</Text>
 
             <View style={{
                 flexDirection: 'row',
@@ -140,7 +153,7 @@ const builderStyle = StyleSheet.create({
         width: '100%',
         height: '100%',
         zIndex: 1,
-        backgroundColor: 'rgba(0,0,0,0.5)'
+        backgroundColor: 'rgba(255,255,255,0.2)'
     },
     playlistCover: {
         position: 'absolute',

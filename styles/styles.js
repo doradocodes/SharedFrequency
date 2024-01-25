@@ -4,8 +4,8 @@ import {colors, layout} from "../constants/constants";
 
 export const styles = StyleSheet.create({
     container: {
-        // flex: 1,
-        // justifyContent: 'space-between',
+        flex: 1,
+        justifyContent: 'space-between',
         // paddingTop: Constants.statusBarHeight || 60,
         // backgroundColor: colors.primary,
         // padding: layout.spacing,
@@ -39,8 +39,11 @@ export const styles = StyleSheet.create({
         backgroundColor: 'transparent',
         height: 40,
         borderBottomWidth: 1,
-        margin: 10,
-        fontSize: 30,
+        marginTop: 40,
+        marginRight: 10,
+        marginLeft: 10,
+        fontSize: 32,
         textAlign: 'center',
+        fontWeight: '500',
     },
 })

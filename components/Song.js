@@ -1,10 +1,12 @@
 import {PanGestureHandler} from "react-native-gesture-handler";
 import {BounceIn, runOnJS, useAnimatedGestureHandler, useAnimatedStyle, useSharedValue} from "react-native-reanimated";
-import {Button, Image, Pressable, StyleSheet, Text} from "react-native";
+import {Button, Image, Pressable, StyleSheet, Text, View} from "react-native";
 import AnimatedView from "react-native-reanimated/src/reanimated2/component/View";
 import {useEffect, useState} from "react";
 import * as Haptics from "expo-haptics";
 import {getTrack} from "../api/spotifyAPI";
+// import SoundPlayer from 'react-native-sound-player';
+
 
 export default function Song({ track, albumImage, setTimelineItems }) {
     const [trackData, setTrackData] = useState({});
@@ -55,14 +57,27 @@ export default function Song({ track, albumImage, setTimelineItems }) {
                 onPress={() => {
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
                     console.log(albumImage);
-                    setTimelineItems((prev) => [...prev, {image: albumImage, title: track.name, id: track.id}]);
+                    setTimelineItems((prev) => [...prev, {image: albumImage, title: track.name, id: track.id, track: track }]);
+                }}
+                style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
                 }}
             >
-                <Text style={styles.title}>{track.name}</Text>
-                {/*<Text style={styles.title}>{track.id}</Text>*/}
-                <Text style={styles.title}>{track.artists.map(artist => artist.name)}</Text>
-                {/*<Text style={styles.title}>{track.preview_url}</Text>*/}
+                <View>
+                    <Text style={styles.title}>{track.name}</Text>
+                    {/*<Text style={styles.title}>{track.id}</Text>*/}
+                    <Text style={styles.title}>{track.artists.map(artist => artist.name)}</Text>
+                    {/*<Text style={styles.title}>{track.preview_url}</Text>*/}
+                </View>
+
                 <Button title={'Play preview'} onPress={() => {
+                    // try {
+                    //     SoundPlayer.playUrl(track.preview_url);
+                    // } catch (e) {
+                    //     console.log(`cannot play the sound file`, e)
+                    // }
                 }} />
             </Pressable>
 
@@ -76,12 +91,12 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
         fontSize: 20,
         padding: 10,
-        backgroundColor: 'white',
-        borderRadius: 10,
+        // backgroundColor: 'white',
+        // borderRadius: 10,
         shadowColor: 'black',
         marginBottom: 10,
     },
     title: {
-        // color: 'white',
+        color: 'white',
     }
 });

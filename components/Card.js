@@ -146,10 +146,11 @@ const cardStyle = StyleSheet.create({
     songList: {
         position: 'absolute',
         opacity: 1,
-        padding: 10,
+        paddingLeft: 10,
+        paddingRight: 10,
         width: '100%',
         height: '100%',
-        backgroundColor: 'rgba(0,0,0,0.5)',
+        backgroundColor: 'rgba(0,0,0,0.75)',
         // backgroundColor: 'red',
         gap: 5,
     }
