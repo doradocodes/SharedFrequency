@@ -17,8 +17,8 @@ export default function Timeline({ items = [] }) {
         console.log("items", items);
         if (items.length > 0) {
             setTimelineLocation(items.length - 1);
-            timelineRef.current.scrollTo({x: (items.length - 1) * 80, animated: true});
-            listRef.current.scrollTo({y: (items.length - 1) * 15, animated: true});
+            // timelineRef.current.scrollTo({x: (items.length - 1) * 80, animated: true});
+            // listRef.current.scrollTo({y: (items.length - 1) * 15, animated: true});
         }
     }, [items]);
 
@@ -45,7 +45,12 @@ export default function Timeline({ items = [] }) {
     return <View>
         <View style={{
         }}>
-            <ScrollView ref={timelineRef} horizontal={true} style={styles.container} showsHorizontalScrollIndicator={true}>
+            <ScrollView
+                ref={timelineRef}
+                horizontal={true}
+                style={styles.container}
+                showsHorizontalScrollIndicator={true}
+            >
                 {items.map((item, i) => {
                     return <View style={styles.item(i, i === 0, i === timelineLocation)}>
                         <Image source={{ uri: item.image }} style={[styles.image(i === timelineLocation)]} />
@@ -54,44 +59,44 @@ export default function Timeline({ items = [] }) {
             </ScrollView>
         </View>
 
-        <Slider
-            value={0}
-            animationType="timing"
-            maximumTrackTintColor="white"
-            maximumValue={items.length}
-            minimumTrackTintColor={'black'}
-            minimumValue={0}
-            onValueChange={(value) => {
-                if (value < items.length) {
-                    setTimelineLocation(value);
-                    timelineRef.current.scrollTo({x: value * 80, animated: true});
-                    listRef.current.scrollTo({y: value * 30, animated: true});
-                }
-            }}
-            orientation="horizontal"
-            step={1}
-            style={styles.slider}
-            thumbStyle={{height: 25, width: 25}}
-            thumbTintColor={'black'}
-            thumbTouchSize={{width: 40, height: 40}}
-            trackStyle={{height: 10}}
-            onSlidingComplete={() => {
-                Haptics.selectionAsync();
-            }}
-        />
+        {/*<Slider*/}
+        {/*    value={0}*/}
+        {/*    animationType="timing"*/}
+        {/*    maximumTrackTintColor="white"*/}
+        {/*    maximumValue={items.length}*/}
+        {/*    minimumTrackTintColor={'black'}*/}
+        {/*    minimumValue={0}*/}
+        {/*    onValueChange={(value) => {*/}
+        {/*        if (value < items.length) {*/}
+        {/*            setTimelineLocation(value);*/}
+        {/*            timelineRef.current.scrollTo({x: value * 80, animated: true});*/}
+        {/*            listRef.current.scrollTo({y: value * 30, animated: true});*/}
+        {/*        }*/}
+        {/*    }}*/}
+        {/*    orientation="horizontal"*/}
+        {/*    step={1}*/}
+        {/*    style={styles.slider}*/}
+        {/*    thumbStyle={{height: 25, width: 25}}*/}
+        {/*    thumbTintColor={'black'}*/}
+        {/*    thumbTouchSize={{width: 40, height: 40}}*/}
+        {/*    trackStyle={{height: 10}}*/}
+        {/*    onSlidingComplete={() => {*/}
+        {/*        Haptics.selectionAsync();*/}
+        {/*    }}*/}
+        {/*/>*/}
 
-        <View>
-            <AnimatedView style={[styles.trackList]}>
-                <ScrollView ref={listRef} style={{ height: 100 }}>
-                    {items.map((item, i) => {
-                        return <View style={styles.trackListItem(timelineLocation === i)}>
-                            <Text style={styles.trackListItemText(timelineLocation === i)}>{i + 1}. {item.title}</Text>
-                            <Text style={styles.trackListItemText(timelineLocation === i)}>{convertMsToMinutes(item.track?.duration_ms)}</Text>
-                        </View>
-                    })}
-                </ScrollView>
-            </AnimatedView>
-        </View>
+        {/*<View>*/}
+        {/*    <AnimatedView style={[styles.trackList]}>*/}
+        {/*        <ScrollView ref={listRef} style={{ height: 100 }}>*/}
+        {/*            {items.map((item, i) => {*/}
+        {/*                return <View style={styles.trackListItem(timelineLocation === i)}>*/}
+        {/*                    <Text style={styles.trackListItemText(timelineLocation === i)}>{i + 1}. {item.title} - {item.track?.artists[0].name}</Text>*/}
+        {/*                    <Text style={styles.trackListItemText(timelineLocation === i)}>{convertMsToMinutes(item.track?.duration_ms)}</Text>*/}
+        {/*                </View>*/}
+        {/*            })}*/}
+        {/*        </ScrollView>*/}
+        {/*    </AnimatedView>*/}
+        {/*</View>*/}
 
 
     </View>
@@ -99,11 +104,8 @@ export default function Timeline({ items = [] }) {
 
 const styles = StyleSheet.create({
     container: {
-        // flexDirection: 'row',
         paddingTop: 20,
-        // paddingLeft: 0,
-        height: 100,
-        // backgroundColor: 'blue',
+        height: 110,
     },
     slider: {
         marginTop: -15,
@@ -118,7 +120,6 @@ const styles = StyleSheet.create({
         width: 80,
         height: 80,
         marginLeft: !isSelectedItem ? -10 : 0,
-        // marginRight: isLastItem ? 20 : 0,
         shadowOpacity: isSelectedItem ? 1 : 0,
         shadowRadius: 5,
         shadowOffset: {
@@ -126,21 +127,21 @@ const styles = StyleSheet.create({
             height: 0,
         },
         shadowColor: 'black',
-        // position: 'absolute',
-        // left: i * 70,
         zIndex: isSelectedItem ? 1 : 0,
     }),
     image: (isSelectedItem) => ({
-        borderRadius: 10,
         width: '100%',
         height: '100%',
-        // transformOrigin: '50% 50%',
         zIndex: isSelectedItem ? 10 : 0,
         transform: [
             {
-                scale: isSelectedItem ? 1.5 : 1,
+                scale: isSelectedItem ? 1.25 : 1,
+            },
+            {
+                translateY: isSelectedItem ? -8 : 0,
             }
         ],
+        transformOrigin: 'bottom bottom',
     }),
     trackList: {
         width: layout.width,

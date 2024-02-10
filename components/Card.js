@@ -1,13 +1,23 @@
-import {Button, Image, Pressable, ScrollView, StyleSheet, Text, View} from 'react-native'
+import {Button, Dimensions, Image, Pressable, ScrollView, StyleSheet, Text, View} from 'react-native'
 import {colors, layout, maxVisibleItems} from "../constants/constants";
 import {styles} from "../styles/styles";
-import {Extrapolate, interpolate, runOnJS, useAnimatedStyle, useSharedValue, withTiming} from "react-native-reanimated";
+import {
+    Extrapolate,
+    FadeOut,
+    FadeIn,
+    interpolate,
+    runOnJS,
+    useAnimatedStyle,
+    useSharedValue,
+    withTiming
+} from "react-native-reanimated";
 import AnimatedView from "react-native-reanimated/src/reanimated2/component/View";
 import Song from "./Song";
 import * as Haptics from "expo-haptics";
 import {useEffect, useRef, useState} from "react";
 import {getAlbum} from "../api/spotifyAPI";
 import {Directions, Gesture, GestureDetector} from "react-native-gesture-handler";
+const { width } = Dimensions.get('window');
 
 
 export default function Card({
@@ -15,33 +25,11 @@ export default function Card({
                                  index,
                                  totalLength,
                                  activeIndex,
-                                 songView,
-                                 setTimelineItems,
+                                 toggleSongView
                              }) {
     const [albumData, setAlbumData] = useState(null);
-    const [showSongList, setShowSongList] = useState(false);
-    // useEffect(() => {
-    //     if (!albumData) {
-    //         getAlbum(info.id).then(res => {
-    //             setAlbumData(res.tracks.items);
-    //         });
-    //     }
-    // }, [info]);
+
     const animatedStyle = useAnimatedStyle(() => {
-        if (songView.value > 0) {
-            if (index === Math.round(activeIndex.value)) {
-                return {
-                    transform: [
-                        {
-                            translateY: -layout.height * 0.15 * songView.value,
-                        },
-                    ]
-                }
-            }
-            return {
-                opacity: 0
-            }
-        }
         return {
             position: 'absolute',
             zIndex: totalLength - index,
@@ -58,12 +46,6 @@ export default function Card({
         }
     });
 
-    const songListStyle = useAnimatedStyle(() => {
-        return {
-            opacity: songView.value,
-        }
-    });
-
     const getAlbumInfo = () => {
         getAlbum(info.id).then(res => {
             console.log('getAlbum', res);
@@ -73,58 +55,29 @@ export default function Card({
 
     return (
         <AnimatedView style={[cardStyle.album, animatedStyle]}>
-            <Pressable
-                onLongPress={() => {
-                    console.log('long press');
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-                    songView.value = withTiming(1, [100], () => {
-                        runOnJS(setShowSongList)(true);
-                        runOnJS(getAlbumInfo)();
-                    });
-                }}
-                style={[cardStyle.imageContainer]}>
-
-                <Image source={{uri: info.images[0].url}} style={[cardStyle.albumImage]}/>
-                <AnimatedView style={[cardStyle.songList, songListStyle]}>
-                    <Button title={'Back'} onPress={() => {
-                        songView.value = withTiming(0, [100], () => {
-                            runOnJS(setShowSongList)(false);
-                        });
-                    }}/>
-                    { showSongList && <SongView
-                        albumData={albumData}
-                        albumImage={info.images[0].url}
-                        setTimelineItems={setTimelineItems}
-                    />}
-                </AnimatedView>
-            </Pressable>
+            <AnimatedView style={{
+                width: '100%',
+                height: '100%',
+            }}>
+                <Pressable
+                    onLongPress={() => {
+                        console.log('long press');
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+                        toggleSongView(info.id);
+                    }}
+                    style={[cardStyle.imageContainer]}>
+                    <Image source={{uri: info.images[0].url}} style={[cardStyle.albumImage]}/>
+                </Pressable>
+            </AnimatedView>
         </AnimatedView>
     )
 }
 
 
-const SongView = ({albumData, albumImage, setTimelineItems}) => {
-    const songViewRef = useRef(null);
-    const flingUp = Gesture.Fling().direction(Directions.UP).onStart(() => {
-        // runOnJS(songViewRef.current.scrollTo({ x: (albumData.length.length - 1) * 100, animated: true}))();
-    });
-    return <ScrollView ref={songViewRef}>
-        {albumData && albumData.map((track, index) => {
-            return <Song
-                track={track}
-                albumImage={albumImage}
-                setTimelineItems={setTimelineItems}
-            />
-        })}
-    </ScrollView>;
-        // <GestureDetector gesture={Gesture.Exclusive(flingUp)}>
 
-        // </GestureDetector>
-}
 
 const cardStyle = StyleSheet.create({
     album: {
-        position: 'relative',
         width: layout.width,
         height: layout.width,
         shadowRadius: 10,
@@ -138,6 +91,7 @@ const cardStyle = StyleSheet.create({
         flex: 1,
         overflow: 'hidden',
         borderRadius: layout.borderRadius,
+        position: 'relative',
     },
     albumImage: {
         width: '100%',

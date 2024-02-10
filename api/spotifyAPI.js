@@ -80,6 +80,7 @@ export const searchItem = async (searchStr, type) => {
         } else {
             return data;
         }
+        return data;
     } catch (error) {
         console.error('Error fetching Spotify access token:', error);
         throw error;
@@ -98,12 +99,13 @@ export const getAlbum = async (id) => {
             },
         });
         const data = await response.json();
-        if (data.error) {
-            await getAccessToken(true);
-            await getAlbum(id);
-        } else {
-            return data;
-        }
+        // if (data.error) {
+        //     await getAccessToken(true);
+        //     await getAlbum(id);
+        // } else {
+        //     return data;
+        // }
+        return data;
     } catch (error) {
         console.error('Error fetching Spotify access token:', error);
         throw error;

@@ -7,8 +7,8 @@ export default function HomeScreen() {
         <Button
             title={'Test Spotify'}
             onPress={async () => {
-                const response = await searchItem();
-                console.log('response', response.albums.items);
+                // const response = await searchItem();
+                // console.log('response', response.albums.items);
             }}
         />
         <View style={styles.background}></View>
