@@ -5,7 +5,7 @@ import AnimatedView from "react-native-reanimated/src/reanimated2/component/View
 import {useEffect} from "react";
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
-const COLLAPSED_TRANSLATE_Y = SCREEN_HEIGHT / 2;
+
 export default function BottomSheet({
                                         children,
                                         aboveDraggableContainerStyle,
@@ -17,17 +17,17 @@ export default function BottomSheet({
     const context = useSharedValue(0);
     const height = useSharedValue(SCREEN_HEIGHT - 200);
 
-    useEffect(() => {
-        if (!collapseSheet) {
-            translateY.value = withSpring(0, {damping: 50});
-        }
-    }, [collapseSheet]);
+    // useEffect(() => {
+    //     if (!collapseSheet) {
+    //         translateY.value = withSpring(0);
+    //     }
+    // }, [collapseSheet]);
 
     const pan = Gesture.Pan()
         .onStart(() => {
             context.value = { y: translateY.value };
         }).onUpdate((event) => {
-            translateY.value = withSpring(context.value.y + event.translationY, {damping: 50});
+            translateY.value = withSpring(context.value.y + event.translationY, { damping: 15});
         });
 
     // const flingUp = Gesture.Fling().direction(Directions.UP).onStart(() => {

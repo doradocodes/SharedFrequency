@@ -25,12 +25,11 @@ export default function Builder() {
 
     return <GestureHandlerRootView style={[styles.container]}>
         <ImageBackground source={{uri: 'https://upload.wikimedia.org/wikipedia/en/e/e3/Shore_%28Fleet_Foxes%29.png'}}>
-            <BlurView
-                intensity={35}
+            <View
                 style={{
                     height: '100%',
                     flexDirection: 'column',
-                    backgroundColor: 'rgba(255, 255, 255, 0.3)'
+                    backgroundColor: 'rgba(0, 0, 0, 1)'
                 }}
                 keyboardShouldPersistTaps='handled'
             >
@@ -45,8 +44,8 @@ export default function Builder() {
                                 style={styles.playlistCover}
                             />
                             <View style={{padding: 10}}>
-                                <Text style={{fontSize: 30, color: 'white', fontWeight: 'bold'}}>Playlist name</Text>
-                                <Text style={{color: 'white'}}>@author @author</Text>
+                                <Text style={{fontSize: 30, fontWeight: 'bold'}}>Playlist name</Text>
+                                <Text style={{}}>@author @author</Text>
                             </View>
                         </View>
                         <Timeline
@@ -60,9 +59,9 @@ export default function Builder() {
                             onChangeText={setSearchText}
                             value={searchText}
                             placeholder="Seach for a song"
-                            onFocus={() => {
-                                setCollapseSearchView(!collapseSearchView);
-                            }}
+                            // onFocus={() => {
+                            //     setCollapseSearchView(!collapseSearchView);
+                            // }}
                         />
                     </>}
                 >
@@ -82,7 +81,7 @@ export default function Builder() {
                         }
                     </AnimatedView>
                 </BottomSheet>
-            </BlurView>
+            </View>
         </ImageBackground>
     </GestureHandlerRootView>
 }
@@ -93,7 +92,7 @@ const styles = StyleSheet.create({
         height: '100%',
     },
     playlistContainer: {
-        backgroundColor: 'rgba(255,255,255,0.3)',
+        backgroundColor: 'rgba(255,255,255,1)',
         borderRadius: 25,
         paddingBottom: 10,
     },
@@ -107,23 +106,24 @@ const styles = StyleSheet.create({
         height: 100,
     },
     searchContainer: {
-        backgroundColor: 'rgba(255,255,255,0.3)',
-        borderTopLeftRadius: 35,
-        borderTopRightRadius: 35,
+        backgroundColor: 'rgba(255,255,255,1)',
+        borderTopLeftRadius: 25,
+        borderTopRightRadius: 25,
         position: 'relative',
+        overflow: 'hidden',
     },
     input: {
         textAlign: 'center',
-        color: 'white',
-        backgroundColor: 'rgba(255,255,255,0.3)',
+        // color: 'white',
+        backgroundColor: 'rgba(255,255,255,1)',
         height: 40,
         borderWidth: 1,
         borderRadius: 30,
         borderColor: 'white',
         marginTop: 20,
         marginBottom: 20,
-        marginRight: 10,
-        marginLeft: 10,
+        marginRight: 0,
+        marginLeft: 0,
         fontSize: 16,
         padding: 10,
     },

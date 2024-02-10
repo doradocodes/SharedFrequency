@@ -5,7 +5,7 @@
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
-    "ios": "expo start --ios",
+    "ios": "expo start --clear --ios",
     "web": "expo start --web",
     "start-local": "expo start --dev-client",
     "build-ios-simulator": "eas build --profile development-simulator --platform ios",
