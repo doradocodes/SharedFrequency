@@ -7,7 +7,7 @@ import SongView from "../components/SongView";
 import AlbumView from "../components/AlbumView";
 import Header from "../components/Header";
 import Timeline from "../components/Timeline";
-import BottomSheet from "../components/BottomSheet";
+import SplitView from "../components/SplitView";
 
 export default function Builder() {
     const [timelineItems, setTimelineItems] = useState([]);
@@ -35,7 +35,7 @@ export default function Builder() {
             >
                 <Header/>
 
-                <BottomSheet
+                <SplitView
                     aboveDraggableContainerStyle={styles.playlistContainer}
                     aboveDraggableContainer={<View>
                         <View style={styles.playlistInfo}>
@@ -80,7 +80,7 @@ export default function Builder() {
                             />
                         }
                     </AnimatedView>
-                </BottomSheet>
+                </SplitView>
             </View>
         </ImageBackground>
     </GestureHandlerRootView>
